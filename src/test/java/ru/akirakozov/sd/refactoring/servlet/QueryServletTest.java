@@ -3,6 +3,8 @@ package ru.akirakozov.sd.refactoring.servlet;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
+import ru.akirakozov.sd.refactoring.dao.DAO;
+import ru.akirakozov.sd.refactoring.model.Product;
 
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServlet;
@@ -23,12 +25,12 @@ public class QueryServletTest {
 
     @Before
     public void before() throws Exception {
-        DAO.init();
+        DAO.createProductsTable();
     }
 
     @After
     public void after() throws Exception {
-        DAO.clear();
+        DAO.deleteAllProducts();
     }
 
     private void baseTest(String command, List<Product> products) throws SQLException, ServletException, IOException {
