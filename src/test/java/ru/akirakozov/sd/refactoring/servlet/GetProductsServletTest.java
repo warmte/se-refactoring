@@ -1,8 +1,11 @@
 package ru.akirakozov.sd.refactoring.servlet;
 
+import org.junit.After;
+import org.junit.Before;
 import org.junit.Test;
 
 import javax.servlet.ServletException;
+import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
@@ -15,12 +18,19 @@ import static org.junit.Assert.assertEquals;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
-public class GetProductsServletTest extends ServletTest {
+public class GetProductsServletTest {
     String EOL = System.lineSeparator();
 
-    @Override
-    protected void setServlet() {
-        servlet = new GetProductsServlet();
+    private final HttpServlet servlet = new GetProductsServlet();
+
+    @Before
+    public void before() throws Exception {
+        DAO.init();
+    }
+
+    @After
+    public void after() throws Exception {
+        DAO.clear();
     }
 
     private void baseTest(List<Product> products) throws SQLException, ServletException, IOException {
