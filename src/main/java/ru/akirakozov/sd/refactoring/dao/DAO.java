@@ -2,10 +2,9 @@ package ru.akirakozov.sd.refactoring.dao;
 
 import ru.akirakozov.sd.refactoring.model.Product;
 
-import java.nio.file.Path;
 import java.sql.*;
 import java.util.ArrayList;
-import java.util.function.Function;
+import java.util.List;
 
 public class DAO {
     private static final String PATH = "jdbc:sqlite:test.db";
@@ -28,7 +27,7 @@ public class DAO {
         return result;
     }
 
-    private static ArrayList<Product> executeProductQuery(FunctionWithException<Connection, PreparedStatement, SQLException> fun) throws SQLException {
+    private static List<Product> executeProductQuery(FunctionWithException<Connection, PreparedStatement, SQLException> fun) throws SQLException {
         try (Connection c = DriverManager.getConnection(PATH)) {
             PreparedStatement stmt = fun.apply(c);
             ResultSet rs = stmt.executeQuery();
@@ -65,7 +64,7 @@ public class DAO {
         executeUpdate(Statements::deleteAllProducts);
     }
 
-    public static ArrayList<Product> selectAllProducts() throws SQLException {
+    public static List<Product> selectAllProducts() throws SQLException {
         return executeProductQuery(Statements::selectAllProducts);
     }
 

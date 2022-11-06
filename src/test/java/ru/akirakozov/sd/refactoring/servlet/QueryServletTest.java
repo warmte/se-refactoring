@@ -4,6 +4,7 @@ import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
 import ru.akirakozov.sd.refactoring.dao.DAO;
+import ru.akirakozov.sd.refactoring.html.HTMLBuilder;
 import ru.akirakozov.sd.refactoring.model.Product;
 
 import javax.servlet.ServletException;
@@ -19,8 +20,6 @@ import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
 public class QueryServletTest {
-    String EOL = System.lineSeparator();
-
     private final HttpServlet servlet = new QueryServlet();
 
     @Before
@@ -41,24 +40,20 @@ public class QueryServletTest {
         String expectedBody;
         switch (command) {
             case "sum":
-                expectedBody = "Summary price: " + EOL + products.stream().map(product -> product.price).reduce(0, Integer::sum) + EOL;
+                expectedBody = HTMLBuilder.sumPriceDescription + products.stream().map(product -> product.price).reduce(0, Integer::sum);
                 break;
             case "count":
-                expectedBody = "Number of products: " + EOL + products.size() + EOL;
+                expectedBody = HTMLBuilder.productsCountedDescription + products.size();
                 break;
             case "max":
                 int value = products.stream().map(product -> product.price).max(Integer::compare).orElse(Integer.MIN_VALUE);
                 Product chosen = products.stream().filter(product -> product.price == value).findFirst().orElse(null);
-                String name = chosen != null ? chosen.name + "\t" : "";
-                String price = chosen != null ? chosen.price + "</br>" + EOL : "";
-                expectedBody = "<h1>Product with max price: </h1>" + EOL + name + price;
+                expectedBody = HTMLBuilder.maxPriceDescription + (chosen != null ? HTMLBuilder.singleProductView(chosen) : "");
                 break;
             case "min":
                 value = products.stream().map(product -> product.price).min(Integer::compare).orElse(Integer.MAX_VALUE);
                 chosen = products.stream().filter(product -> product.price == value).findFirst().orElse(null);
-                name = chosen != null ? chosen.name + "\t" : "";
-                price = chosen != null ? chosen.price + "</br>" + EOL : "";
-                expectedBody = "<h1>Product with min price: </h1>" + EOL + name + price;
+                expectedBody = HTMLBuilder.minPriceDescription + (chosen != null ? HTMLBuilder.singleProductView(chosen) : "");
                 break;
             default:
                 expectedBody = "";
@@ -72,7 +67,7 @@ public class QueryServletTest {
 
         servlet.service(requestMock, responseMock);
 
-        assertEquals(String.format("<html><body>%s%s</body></html>%s", EOL, expectedBody, EOL), responseMock.getWriter().toString());
+        assertEquals(HTMLBuilder.bodyView(expectedBody), responseMock.getWriter().toString());
     }
 
     @Test
